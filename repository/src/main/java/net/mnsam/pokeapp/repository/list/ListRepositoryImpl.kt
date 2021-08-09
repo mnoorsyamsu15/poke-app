@@ -1,5 +1,6 @@
 package net.mnsam.pokeapp.repository.list
 
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,21 +30,27 @@ class ListRepositoryImpl @Inject constructor(
         limit: Int
     ): Flow<List<MonsterDomain>> {
         return flow {
-            try {
-                coroutineScope {
-                    // launch a separate job to fetch from network
-                    launch { fetchMonster(offset, limit) }
-                    // observe local db as source of truth
-                    monsterDao.getAllMonsters()
-                        .collect {
-                            if (it.isNotEmpty()) {
-                                this@flow.emit(it.toMonsterDomain())
-                            }
-                        }
+            coroutineScope {
+                // handler to raise exception to parent's job
+                val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+                    throw throwable
                 }
-            } catch (t: Throwable) {
-                val message = t.parseRetrofitError()
-                throw Exception(message)
+                // launch a separate job to fetch from network
+                launch(exceptionHandler) {
+                    try {
+                        fetchMonster(offset, limit)
+                    } catch (t: Throwable) {
+                        val message = t.parseRetrofitError()
+                        throw Exception(message)
+                    }
+                }
+                // observe local db as source of truth
+                monsterDao.getAllMonsters()
+                    .collect {
+                        if (it.isNotEmpty()) {
+                            this@flow.emit(it.toMonsterDomain())
+                        }
+                    }
             }
         }
     }
