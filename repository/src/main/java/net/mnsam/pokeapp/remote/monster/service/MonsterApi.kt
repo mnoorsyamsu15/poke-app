@@ -1,8 +1,6 @@
 package net.mnsam.pokeapp.remote.monster.service
 
-import kotlinx.coroutines.Deferred
 import net.mnsam.pokeapp.remote.monster.model.DetailDTO
-import net.mnsam.pokeapp.remote.monster.model.MonsterDTO
 import net.mnsam.pokeapp.remote.monster.model.MonsterListDTO
 import retrofit2.http.GET
 import retrofit2.http.Path

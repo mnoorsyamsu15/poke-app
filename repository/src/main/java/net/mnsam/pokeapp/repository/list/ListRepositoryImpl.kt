@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import net.mnsam.pokeapp.local.PokemonDatabase
 import net.mnsam.pokeapp.local.dao.MonsterDao
 import net.mnsam.pokeapp.remote.monster.model.DetailDTO
