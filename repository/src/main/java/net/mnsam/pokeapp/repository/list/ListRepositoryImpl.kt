@@ -38,7 +38,6 @@ class ListRepositoryImpl @Inject constructor(
                     monsterDao.getAllMonsters()
                         .collect {
                             if (it.isNotEmpty()) {
-                                println("LOG: got non empty result, emitting")
                                 this@flow.emit(it.toMonsterDomain())
                             }
                         }
@@ -57,7 +56,6 @@ class ListRepositoryImpl @Inject constructor(
             val job = coroutineScope { async { monsterApi.getDetail(monster.name) } }
             detailJobs.add(job)
         }
-        println("LOG: clearing cache and insert them")
         monsterDao.clearTable()
         monsterDao.insert(detailJobs.awaitAll().toMonsterEntities())
     }
